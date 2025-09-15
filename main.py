@@ -1,12 +1,13 @@
 from langchain_ollama.llms import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate
+from vecteur import retriever
 
-model = OllamaLLM(model="llama3.2:3b")
+model = OllamaLLM(model="llama3.2:1b")
 
 template = """
-Tu es un expert qui sait répondre à des questions à propos de la Normandie
+Tu es un guide touristique à Paris.
 
-Voici quelques éléments importants : {extraits}
+Utilise ces informations pour répondre à la question : {extraits}
 
 Voici la question à laquelle répondre : {question}
 """
@@ -19,5 +20,6 @@ while True :
     if question == "q" :
         break
     
-    resultat = chain.invoke({"extraits":[],"question":"Quel est le plus grand monument de Rouen?"})
+    extraits = retriever.invoke(question)
+    resultat = chain.invoke({"extraits":extraits,"question": question})
     print(resultat)

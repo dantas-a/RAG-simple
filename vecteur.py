@@ -1,9 +1,10 @@
 from langchain_ollama import OllamaEmbeddings
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
-from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 import os
+import shutil
 
 DATA_PATH = './data/'
 DB_PATH = './chroma_db/'    
@@ -25,7 +26,7 @@ def split_documents(documents: list[Document]):
 
 # Récupération de la fonction d'embedding qui va nous permettre d'encoder chaque morceau pour savoir de quoi le morceau "traite"
 def get_embedding_function():
-    return OllamaEmbeddings(model="mxbai-embed-large")
+    return OllamaEmbeddings(model="bge-m3")
 
 # Ajout de documents dans la base de données chroma (base de données vectorielle)
 def add_to_chroma(chunks: list[Document]):
@@ -40,7 +41,7 @@ def add_to_chroma(chunks: list[Document]):
     # Ajoute ou mets à jour les documents dans la base de données
     existing_items = db.get(include=[])  # IDs are always included by default
     existing_ids = set(existing_items["ids"])
-    print(f"Number of existing documents in DB: {len(existing_ids)}")
+    print(f"Nombre de documents existants dans la base de données: {len(existing_ids)}")
 
     # Identifie les nouveaux documents
     new_chunks = []
@@ -53,7 +54,6 @@ def add_to_chroma(chunks: list[Document]):
         print(f"👉 Ajout de nouveaux documents: {len(new_chunks)}")
         new_chunk_ids = [chunk.metadata["id"] for chunk in new_chunks]
         db.add_documents(new_chunks, ids=new_chunk_ids)
-        db.persist()
     else:
         print("✅ Pas de documents ajoutés")
 
@@ -83,3 +83,24 @@ def calculate_chunk_ids(chunks):
         chunk.metadata["id"] = chunk_id
 
     return chunks
+
+# Nettoyer la base de données
+def clear_database():
+    if os.path.exists(DB_PATH):
+        shutil.rmtree(DB_PATH)
+
+# Création de la base de données
+def create_base(reset=False):
+    if reset :
+        print("✨ Nettoyage de la base de données")
+        clear_database()
+
+    # Création ou mise à jour des données
+    documents = load_documents()
+    chunks = split_documents(documents)
+    add_to_chroma(chunks)  
+    
+create_base(True)
+
+# Permet de récupérer les documents les plus pertinents pour répondre aux questions
+retriever = Chroma(persist_directory=DB_PATH,embedding_function = get_embedding_function()).as_retriever(search_kwargs={"k": 5})
