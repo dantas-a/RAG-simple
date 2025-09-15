@@ -1,6 +1,6 @@
 # RAG-simple
 
-RAG-simple est un projet de démonstration d'un système de Retrieval-Augmented Generation (RAG) en Python. Il permet d'interroger des documents PDF locaux à l'aide d'une base de vecteurs (ChromaDB) et d'un LLM (Ollama). Les documents indexés sont en français et les questions posées doivent également être en français.
+RAG-simple est un projet de démonstration d'un système de Retrieval-Augmented Generation (RAG) en Python. Il permet d'interroger des documents PDF locaux à l'aide d'une base de vecteurs (ChromaDB) et d'un LLM (Ollama). Les documents indexés sont en français et concernent Paris (guides touristiques, présentations, etc.). Les questions posées doivent également être en français et porter sur Paris.
 
 ## Fonctionnalités
 - Indexation de documents PDF (guides, présentations, etc.)
@@ -35,13 +35,13 @@ data/                  # Dossier contenant les fichiers PDF à indexer
    ```
 
 ## Utilisation
-1. Placez vos fichiers PDF (en français) dans le dossier `data/`.
+1. Placez vos fichiers PDF (en français, traitant de Paris) dans le dossier `data/` (par exemple : guides touristiques parisiens, présentations sur Paris, etc.).
 2. Assurez-vous qu'Ollama est lancé sur votre machine.
 3. Lancez le script principal :
    ```bash
    python main.py
    ```
-4. Suivez les instructions pour interroger vos documents en français.
+4. Suivez les instructions pour interroger vos documents en français, en posant des questions sur Paris ou son guide touristique.
 
 ## Dépendances principales
 - Python 3.12+
